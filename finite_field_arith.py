@@ -1,3 +1,4 @@
+import random
 class Field:
     def __init__(self, p, n, f):
         """ Construct a field. Input: p, n, f.
@@ -147,7 +148,7 @@ class Polynomial:
 
         selfcoefs, othercoefs, _ = pad_lists(self.coefs, other.coefs)
         
-        return selfcoefs == othercoefs
+        return selfcoefs == othercoefs and self.field == other.field
 
     def is_zero(self):
         return self == 0 or self.coefs == [0 for i in range(len(self.coefs))]
@@ -210,31 +211,37 @@ class Polynomial:
             q = r.poly_div_mod(newr)[0]
             r, newr = newr, r - (q*newr)
             t, newt = newt, t - (q*newt)
-        assert r.deg() > 0, "Either field.irr is not irreducible or polynomial is multiple of field.irr"
+        assert r.deg() == 0, "Either field.irr is not irreducible or polynomial is multiple of field.irr"
         
         return t * inverses(char)[r.coefs[0]]
           
     
-class Element:
-    def __init__(self, poly, field):
-        #print(poly.coefs)
-        assert len(poly.coefs) <= field.dim
-        self.poly = poly#Polynomial([coef % field.char for coef in coefs])
-        self.field = field
+class Element():
+    def __init__(self, poly):
+        assert len(poly.coefs) <= poly.field.dim
+        self.poly = poly
+        self.field = poly.field
 
     def __repr__(self):
-        return str(self.poly)
+        return str(self.poly)+" in the "+str(self.field).lower()
     
     def __add__(self, other):
+        if isinstance(other, int):
+            return self + Element(Polynomial([other], self.field))
         assert self.field == other.field
         p = self.field.char
         new_poly = (self.poly + other.poly) % p
-        return Element(new_poly, self.field)
+        return Element(new_poly)
     
     def __neg__(self):
-        return Element((-self.poly) % self.field.char, self.field)
+        return Element((-self.poly) % self.field.char)
     
+    def __sub__(self, other):
+        return self + (-other)
+
     def __eq__(self, other):
+        if isinstance(other, int):
+            return self.poly == Polynomial([other], self.field)
         return self.poly == other.poly and self.field == other.field
     
     def is_zero(self):
@@ -244,21 +251,68 @@ class Element:
         return self.poly.deg()
 
     def __pow__(self, num):
-        return Element((self.poly**num) % self.field.irr, self.field)
+        return Element((self.poly**num) % self.field.irr)
+
     def __mul__(self, other):
+        if isinstance(other, int):
+            return self * Element(Polynomial([other], self.field))
         assert self.field == other.field
-        return Element((self.poly*other.poly) % self.field.irr, self.field)
+        return Element((self.poly*other.poly) % self.field.irr)
+
+    def __rmul__(self, other):
+        return self * other
+
     def __truediv__(self, other):
+        if isinstance(other, int):
+            return self / Element(Polynomial([other], self.field))
         assert self.field == other.field
         other_inv = other.inv()
-        return Element(self.poly * other_inv.poly, self.field)
+        return Element(self.poly)*Element(other_inv.poly)
+
+    def __rtruediv__(self, other):
+        if isinstance(other, int):
+            return Element(Polynomial([other], self.field)) / self
+
     def inv(self):
-        return Element(self.poly.inv(self.field.irr), self.field)
-    #def __div__(self, other):
-        
-    def mod(self, other):
-        #assert not is_zero(other)
-        q = 1
+        return Element(self.poly.inv())
+
+    def __hash__(self):
+        return hash((tuple(self.poly.coefs),tuple(self.field.irr.coefs)))
+
+    def is_gen(self, verbose = False):
+        generated = self.generated_subgroup()
+        if verbose:
+            for gen in generated:
+                print(gen)
+        return len(generated) == self.field.size - 1
+
+    def generated_subgroup(self):
+        generated = set()
+        cand = Element(Polynomial([1], self.field))*self
+        while True:
+            if cand in generated:
+                break
+            generated.add(cand)
+            cand = cand * self
+        return generated        
+
+    @staticmethod
+    def random(field):
+        p = field.char
+        elems = [i for i in range(p)]
+        n = field.dim
+        coefs = [random.choice(elems) for i in range(n)]
+        return Element(Polynomial(coefs,field))
+
+    @staticmethod
+    def draw_generator(field, halt = -1):
+        while halt != 0:
+            cand = Element.random(field)
+            gen = cand.generated_subgroup()
+            if len(gen) == field.size - 1:
+                return cand
+            halt -= 1
+        return None
 
 def pad_lists(l1, l2):
     length = max(len(l1),len(l2))
@@ -283,8 +337,36 @@ g = Polynomial([3, 3, 2], F)
 F2 = Field(2,1,None)
 irr = Polynomial([1, 1, 0, 1], F2)
 G = Field(2, 3, irr)
-r = Polynomial([0, 1, 1],G)
+r = Polynomial([0,1,0],G)
 
+# print(G)
+# print(r) 
+t = Element(r)
+# print(-t)
+# print(t+2)
+# #t = Element(Polynomial([1], G))
+# print(t**2)
+# print(r/r)
+# print(r.field)
+# print(t.poly == r)
+# print((r.inv()*r)%r.field.irr)
+# print(t.inv())
+# print(1/t * t)
+# print(Element(Polynomial([1], G)))
+field = t.generated_subgroup()
+for x in field:
+    print(x.is_gen())
+
+F31 = Field(31,1,None)
+irr31 = Polynomial([0, 1, 0, 1], F31)
+G = Field(31, 3, irr31)
+
+x = Element.random(G)
+print(x, x.inv(), x*x.inv())
+# print(x)
+# print(len(x.generated_subgroup()))
+#y = Element.draw_generator(G, halt = 100)
+#print(y)
 '''
 f = Polynomial([1, 1, 0, 1], 2)
 F = Field(2, 3, f)
