@@ -122,6 +122,7 @@ class Polynomial:
             return nom / self
 
     def __mod__(self, other):
+        print("Other:", other)
         if isinstance(other, int):
             return Polynomial([c % other for c in self.coefs], self.field)
 
@@ -207,8 +208,7 @@ class Polynomial:
 
         return Polynomial(mult_coefs, self.field)
 
-    def inv(self):
-        irr = self.field.irr
+    def inv(self, irr):
         char = self.field.char
         t = Polynomial([0], self.field)
         newt = Polynomial([1], self.field)
@@ -232,24 +232,26 @@ class Polynomial:
 
 
 class Element():
-    def __init__(self, poly):
-        assert len(poly.coefs) <= poly.field.dim
+    def __init__(self, poly, field):
+        assert len(poly.coefs) <= field.dim
         self.poly = poly
-        self.field = poly.field
+        self.field = field
+        self.coef_field = poly.field
 
     def __repr__(self):
         return str(self.poly) + " in the " + str(self.field).lower()
 
     def __add__(self, other):
         if isinstance(other, int):
-            return self + Element(Polynomial([other], self.field))
+            pol = Polynomial([other], self.coef_field)
+            return self + Element(pol, self.field)
         assert self.field == other.field
         p = self.field.char
         new_poly = (self.poly + other.poly) % p
-        return Element(new_poly)
+        return Element(new_poly, self.field)
 
     def __neg__(self):
-        return Element((-self.poly) % self.field.char)
+        return Element((-self.poly) % self.field.char, self.field)
 
     def __sub__(self, other):
         return self + (-other)
@@ -266,30 +268,36 @@ class Element():
         return self.poly.deg()
 
     def __pow__(self, num):
-        return Element((self.poly**num) % self.field.irr)
+        return Element((self.poly**num) % self.field.irr, self.field)
 
     def __mul__(self, other):
         if isinstance(other, int):
-            return self * Element(Polynomial([other], self.field))
+            pol = Polynomial([other], self.coef_field)
+            return self * Element(pol, self.field)
         assert self.field == other.field
-        return Element((self.poly * other.poly) % self.field.irr)
+        mod = self.field.char
+        if self.field.irr:
+            mod = self.field.irr
+        return Element((self.poly * other.poly) % mod, self.field)
 
     def __rmul__(self, other):
         return self * other
 
     def __truediv__(self, other):
         if isinstance(other, int):
-            return self / Element(Polynomial([other], self.field))
+            return self / Element(Polynomial([other], self.field), self.field)
         assert self.field == other.field
         other_inv = other.inv()
-        return Element(self.poly) * Element(other_inv.poly)
+        el1 = Element(self.poly, self.field)
+        el2 = Element(other_inv.poly, self.field)
+        return el1 * el2
 
     def __rtruediv__(self, other):
         if isinstance(other, int):
-            return Element(Polynomial([other], self.field)) / self
+            return Element(Polynomial([other], self.field), self.field) / self
 
     def inv(self):
-        return Element(self.poly.inv())
+        return Element(self.poly.inv(self.field.irr), self.field)
 
     def __hash__(self):
         return hash((tuple(self.poly.coefs), tuple(self.field.irr.coefs)))

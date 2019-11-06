@@ -45,22 +45,23 @@ Given a field `F` and a list of coefficients `coefs` from list we can construct 
 f = Polynomial(coefs, F)
 ```
 ### Field Elements
-A field element `alpha` in `F` is determined by the polynomial representation of `alpha` and its underlying field `F`. Note that since the polynomial representation of `alpha` already encapsulates `F` the construction of `alpha` is dependent on the polynomial alone.
-
-That is, if `f` is a polynomial in some field `F` then:
+A field element `alpha` in `F = G[x] % irr` is determined by the polynomial representation `f_alpha` and its respective field `F`. Note that while `f_alpha` is an element in `G[x]` (i.e., the coefficient are element from `G`) the field element `alpha` is an element of `F` and therefore is defined as follows:
+<!-- since the polynomial representation of `alpha` already encapsulates `F` the construction of `alpha` is dependent on the polynomial alone. -->
+<!-- That is, if `f` is a polynomial in some field `F` then: -->
 ```python
-alpha = Element(f)
+f = Polynomial(coefs, G)
+alpha = Element(f, F)
 ```
 Constructs the appropriate field element `f % F.irr`
 
 ### Full example
-The following snippet constructs `F_2, F_8 = F_2[x] % x^3 + x + 1, f = 1 + x^2` and the field element `alpha_f = 1 + x^2 % (x^3 + x + 1)`:
+The following snippet constructs `F_2, F_8 = F_2[x] % x^3 + x + 1`, the polynomial `f = 1 + x^2` over `F_2[x]` and the field element `alpha_f = 1 + x^2 % (x^3 + x + 1)`:
 ```python
 F2 = Field(2, 1, None)
 irr = Polynomial([1, 1, 0, 1], F2)
 F8 = Field(2, 3, irr)
-f = Polynomial([1, 0, 1], F8)
-f_in_field = Element(f)
+f = Polynomial([1, 0, 1], F2)
+f_in_field = Element(f, F8)
 ```
 
 ## Functionality
@@ -83,7 +84,7 @@ g = Element.draw_generator(F, halt = k) #draw random element in F and return it 
 
 ## Todo
 The following is a list of features to be implemented in the future:
-* Create field element with respect to field: current implementation encapsulates the underlying field of the element in its polynomial, but this is an incorrect implementation. A polynomial `f` whose coefficient are in a field `F` is an element of the ring `F[x]`. If `G` is some quotient field `F[x] % irr` then `f` as a polynomial is an element of `F[x]` and `f % irr` as a field element is in `G`. Current implementation requires `f.field` to be `G`.
+* Update demo GIF: current GIF has polynomial in `F[x]` defined as a polynomial over a field `G = F[x] % irr`.
 * Extension fields: in the current implementation a field of size `p^k` for `k > 1` must be constructed as a degree `k` extension of `F_p`. Future implementation should allow, for example, creating `G = F_p[x] % irr_1` and `H = G[y] % irr_2` where `irr_1` is in `F_p[x]` and `irr_2` is in `G[y]`.
 
 ## License

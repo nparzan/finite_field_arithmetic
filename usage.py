@@ -9,11 +9,24 @@ g = Polynomial([3, 3, 2], F)
 F2 = Field(2,1,None)
 irr = Polynomial([1, 1, 0, 1], F2)
 G = Field(2, 3, irr)
-r = Polynomial([0,1,0],G)
+r = Polynomial([0,1,0],F2)
 
 # print(G)
 # print(r) 
-t = Element(r)
+t = Element(r,G)
+q = Element(Polynomial([1], F2), G)
+print("t:",t / t)
+
+print("tinv:", t.inv())
+
+F7 = Field(7, 1, None)
+pol3 = Polynomial([3], F7)
+el3 = Element(pol3, F7)
+
+print("Final")
+print(el3*3)
+
+exit()
 # print(-t)
 # print(t+2)
 # #t = Element(Polynomial([1], G))
