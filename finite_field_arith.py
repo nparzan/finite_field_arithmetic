@@ -1,6 +1,6 @@
 import random
 class Field:
-    def __init__(self, p, n, f):
+    def __init__(self, p, n, f, ind = "x"):
         """ Construct a field. Input: p, n, f.
             Output: The field of size p**n defined as follows:
                 1. If n == 1: The field of size Fp (Zp)
@@ -16,11 +16,12 @@ class Field:
         self.dim = n
         self.size = p**n
         self.inverses = inverses(p)
+        self.indeterminate = ind
 
     def zero(self):
-        return Polynomial([0], None)
+        return Polynomial([0], self)
     def one(self):
-        return Polynomial([1], None)
+        return Polynomial([1], self)
     def __repr__(self):
         if self.dim == 1:
             return "Field of size " + str(self.size)        
@@ -55,17 +56,18 @@ class Polynomial:
                 c, x, exp = "", "", ""
                 if self.coefs[i] != 1 or i == 0:
                     c = str(self.coefs[i])
+
                 if i != 0:
-                    x = "x"
+                    x = self.field.indeterminate#"x"
+                if x != "x" and self.coefs[i] != 1 and not isinstance(self.coefs[i],int):
+                    c = "("+c+")"
                 if i > 1:
                     exp = str(i)
                     x += "^"
                 poly += c+x+exp+"+"
         if poly == "":
-            poly = "0"
-        else:
-            poly = poly[:-1]
-        return poly
+            poly = "00"
+        return poly[:-1]
 
     def __add__(self, other):
         if isinstance(other, int):
@@ -80,6 +82,8 @@ class Polynomial:
             
         return Polynomial(new_coefs, self.field)
 
+    def __radd__(self, other):
+        return self + other
     def __neg__(self):
         negs = [-coef for coef in self.coefs]
         if self.field.char:
@@ -194,18 +198,13 @@ class Polynomial:
 
     
     def inv(self):
-
-        # First we check if we are trying to invert an element in Fp
-        if self.field.dim == 1:
-            assert self.is_const(), "Can only invert elements in the field"
-            return self.field.inverses[self.coefs[0]]
-
-        # Otherwise, we invert using Euclid
         irr = self.field.irr
         char = self.field.char
         t = Polynomial([0],self.field)
         newt = Polynomial([1],self.field)
-        r = Polynomial([coef for coef in irr.coefs], self.field)
+        r = Polynomial([1],self.field)
+        if irr:
+            r = Polynomial([coef for coef in irr.coefs], self.field)
         newr = Polynomial([coef for coef in self.coefs], self.field)
         while not newr.is_zero():
             q = r.poly_div_mod(newr)[0]
@@ -214,6 +213,9 @@ class Polynomial:
         assert r.deg() == 0, "Either field.irr is not irreducible or polynomial is multiple of field.irr"
         
         return t * inverses(char)[r.coefs[0]]
+    @staticmethod
+    def one(field):
+        return field.one()
           
     
 class Element():
@@ -356,17 +358,39 @@ t = Element(r)
 field = t.generated_subgroup()
 for x in field:
     print(x.is_gen())
+field = list(field)
+print(field[5].inv()+1)
+print(Element(Polynomial([1],field[0].field)))
+K = Field(7, 1, None)
+R = Field(2,1,None)
+a = Element(Polynomial([1],R))
+z = Element(Polynomial([0], K))
+print("z,a:", z,a)
+print("z inv:",z.inv(),z.inv().field.indeterminate)
+GT = Field(2,3,None,ind="y")
+T = Polynomial([field[5].poly,field[2].poly,field[4].poly],GT)
+One = Polynomial.one(GT)
+print("One:",One)
+print("T:",T)
+print("T**2:",T*T)
 
 F31 = Field(31,1,None)
-irr31 = Polynomial([0, 1, 0, 1], F31)
+irr31 = Polynomial([1, 12, 7, 1], F31)
 G = Field(31, 3, irr31)
 
 x = Element.random(G)
 print(x, x.inv(), x*x.inv())
 # print(x)
 # print(len(x.generated_subgroup()))
+
+
+#import time
+#t0 = time.perf_counter()
+
 #y = Element.draw_generator(G, halt = 100)
 #print(y)
+#print("Found in:", time.perf_counter() - t0)
+
 '''
 f = Polynomial([1, 1, 0, 1], 2)
 F = Field(2, 3, f)
