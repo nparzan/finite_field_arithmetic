@@ -1,6 +1,8 @@
 import random
+
+
 class Field:
-    def __init__(self, p, n, f, ind = "x"):
+    def __init__(self, p, n, f, ind="x"):
         """ Construct a field. Input: p, n, f.
             Output: The field of size p**n defined as follows:
                 1. If n == 1: The field of size Fp (Zp)
@@ -20,13 +22,19 @@ class Field:
 
     def zero(self):
         return Polynomial([0], self)
+
     def one(self):
         return Polynomial([1], self)
+
     def __repr__(self):
         if self.dim == 1:
-            return "Field of size " + str(self.size)        
-        poly = str(self.irr)        
-        return "Field of size " + str(self.size) + ", Characteristic " + str(self.char) + ", with irreducible polynomial " + poly
+            return "Field of size " + str(self.size)
+        poly = str(self.irr)
+        st = "Field of size " + str(self.size)
+        st += ", Characteristic " + str(self.char)
+        st += ", with irreducible polynomial " + poly
+        return st
+
 
 class Polynomial:
     def __init__(self, coefs, field):
@@ -34,21 +42,21 @@ class Polynomial:
         if not any(coefs):
             coefs = [0]
         else:
-            for i in range(len(coefs)-1, -1, -1):
+            for i in range(len(coefs) - 1, -1, -1):
                 if coefs[i] != 0:
-                    coefs = coefs[:i+1]
+                    coefs = coefs[:i + 1]
                     break
         for coef in coefs:
             pass
-            #TODO: assert coef in field
-        
+            # TODO: assert coef in field
+
         self.coefs = coefs
         if field.char:
             self.coefs = [coef % field.char for coef in self.coefs]
 
-        self.dim = len(self.coefs)-1
+        self.dim = len(self.coefs) - 1
         self.field = field
-        
+
     def __repr__(self):
         poly = ""
         for i in range(len(self.coefs) - 1, -1, -1):
@@ -58,32 +66,34 @@ class Polynomial:
                     c = str(self.coefs[i])
 
                 if i != 0:
-                    x = self.field.indeterminate#"x"
-                if x != "x" and self.coefs[i] != 1 and not isinstance(self.coefs[i],int):
-                    c = "("+c+")"
+                    x = self.field.indeterminate
+                if (x != "x" and self.coefs[i] != 1 and
+                        not isinstance(self.coefs[i], int)):
+                    c = "(" + c + ")"
                 if i > 1:
                     exp = str(i)
                     x += "^"
-                poly += c+x+exp+"+"
+                poly += c + x + exp + "+"
         if poly == "":
             poly = "00"
         return poly[:-1]
 
     def __add__(self, other):
         if isinstance(other, int):
-            return self + Polynomial([other],self.field)
-        
+            return self + Polynomial([other], self.field)
+
         assert self.field.char == other.field.char
-        selfcoefs, othercoefs, length = pad_lists(self.coefs, other.coefs)        
+        selfcoefs, othercoefs, length = pad_lists(self.coefs, other.coefs)
         new_coefs = [(selfcoefs[i] + othercoefs[i]) for i in range(length)]
 
         if self.field.char:
             new_coefs = [coef % self.field.char for coef in new_coefs]
-            
+
         return Polynomial(new_coefs, self.field)
 
     def __radd__(self, other):
         return self + other
+
     def __neg__(self):
         negs = [-coef for coef in self.coefs]
         if self.field.char:
@@ -99,31 +109,33 @@ class Polynomial:
         for i in range(num):
             new = new * self
         return new
-    
+
     def __truediv__(self, other):
         if isinstance(other, int):
             inv = inverses(self.field.char)[other]
-            return self*Polynomial([inv], self.field)
+            return self * Polynomial([inv], self.field)
         return self.poly_div_mod(other)[0]
-    
+
     def __rtruediv__(self, other):
         if isinstance(other, int):
             nom = Polynomial([other], self.field)
             return nom / self
-        
+
     def __mod__(self, other):
         if isinstance(other, int):
-            return Polynomial([coef % other for coef in self.coefs], self.field)
+            return Polynomial([c % other for c in self.coefs], self.field)
+
         if other.is_const() and not other.is_zero():
-            
-            return Polynomial([coef % other.coefs[0] for coef in self.coefs], self.field)
+            coefs = [coef % other.coefs[0] for coef in self.coefs]
+            return Polynomial(coefs, self.field)
         else:
             return self.poly_div_mod(other)[1]
-        
+
     def poly_div_mod(self, other):
         assert not other.is_zero(), "Divide by zero"
-        assert self.field.char == other.field.char, "Can't divide polynomials from fields of different chars."
-        
+        err = "Can't divide polynomials from fields of different chars."
+        assert self.field.char == other.field.char, err
+
         char = self.field.char
         if char:
             invs = inverses(char)
@@ -134,8 +146,8 @@ class Polynomial:
                 t = r.coefs[r.deg()] * invs[other.coefs[other.deg()]]
             else:
                 t = r.coefs[r.deg()] / other.coefs[other.deg()]
-            
-            new_poly_coefs = [0 for i in range(r.deg()+1)]
+
+            new_poly_coefs = [0 for i in range(r.deg() + 1)]
             new_poly_coefs[r.deg() - other.deg()] = t
             new_poly = Polynomial(new_poly_coefs, self.field)
             q = q + new_poly
@@ -143,81 +155,82 @@ class Polynomial:
             if char:
                 if q != q % char or r != r % char:
                     print("Check")
-                
-        return (q,r)
-    
+
+        return (q, r)
+
     def __eq__(self, other):
         if isinstance(other, int):
             return self.coefs[0] == other and len(self.coefs) == 1
 
         selfcoefs, othercoefs, _ = pad_lists(self.coefs, other.coefs)
-        
+
         return selfcoefs == othercoefs and self.field == other.field
 
     def is_zero(self):
         return self == 0 or self.coefs == [0 for i in range(len(self.coefs))]
-        
+
     def deg(self):
         if self.is_zero():
             return 0
-        
+
         n = len(self.coefs)
-        
+
         for i in range(n - 1, -1, -1):
             if self.coefs[i] != 0:
                 return i
         return 0
-    
+
     def __rmul__(self, other):
         if isinstance(other, int):
-            return self*other
-        
+            return self * other
+
     def is_const(self):
         return len(self.coefs) == 1
-    
-    def __mul__(self, other):
-        const = None
-        if isinstance(other, int):
-            return self*Polynomial([other], self.field)
 
-        assert self.field.char == other.field.char, "Field characteristics must agree when multiplying polynomials"
-        
+    def __mul__(self, other):
+        if isinstance(other, int):
+            return self * Polynomial([other], self.field)
+        err = "Field characteristics must agree when multiplying polynomials"
+        assert self.field.char == other.field.char, err
+
         selfcoefs, othercoefs, length = pad_lists(self.coefs, other.coefs)
 
         # Do the actual work
-        mult_coefs = [0 for i in range(2*length-1)]
+        mult_coefs = [0 for i in range(2 * length - 1)]
         for i in range(length):
             for j in range(length):
-                mult_coefs[i+j] += selfcoefs[i]*othercoefs[j]
+                mult_coefs[i + j] += selfcoefs[i] * othercoefs[j]
 
-        # Take mod field characteristic                
+        # Take mod field characteristic
         if self.field.char:
             mult_coefs = [coef % self.field.char for coef in mult_coefs]
-            
+
         return Polynomial(mult_coefs, self.field)
 
-    
     def inv(self):
         irr = self.field.irr
         char = self.field.char
-        t = Polynomial([0],self.field)
-        newt = Polynomial([1],self.field)
-        r = Polynomial([1],self.field)
+        t = Polynomial([0], self.field)
+        newt = Polynomial([1], self.field)
+        r = Polynomial([1], self.field)
         if irr:
             r = Polynomial([coef for coef in irr.coefs], self.field)
         newr = Polynomial([coef for coef in self.coefs], self.field)
         while not newr.is_zero():
             q = r.poly_div_mod(newr)[0]
-            r, newr = newr, r - (q*newr)
-            t, newt = newt, t - (q*newt)
-        assert r.deg() == 0, "Either field.irr is not irreducible or polynomial is multiple of field.irr"
-        
+            r, newr = newr, r - (q * newr)
+            t, newt = newt, t - (q * newt)
+        err = "Either field.irr is not irreducible "
+        err += "or polynomial is multiple of field.irr"
+        assert r.deg() == 0, err
+
         return t * inverses(char)[r.coefs[0]]
+
     @staticmethod
     def one(field):
         return field.one()
-          
-    
+
+
 class Element():
     def __init__(self, poly):
         assert len(poly.coefs) <= poly.field.dim
@@ -225,8 +238,8 @@ class Element():
         self.field = poly.field
 
     def __repr__(self):
-        return str(self.poly)+" in the "+str(self.field).lower()
-    
+        return str(self.poly) + " in the " + str(self.field).lower()
+
     def __add__(self, other):
         if isinstance(other, int):
             return self + Element(Polynomial([other], self.field))
@@ -234,10 +247,10 @@ class Element():
         p = self.field.char
         new_poly = (self.poly + other.poly) % p
         return Element(new_poly)
-    
+
     def __neg__(self):
         return Element((-self.poly) % self.field.char)
-    
+
     def __sub__(self, other):
         return self + (-other)
 
@@ -245,7 +258,7 @@ class Element():
         if isinstance(other, int):
             return self.poly == Polynomial([other], self.field)
         return self.poly == other.poly and self.field == other.field
-    
+
     def is_zero(self):
         return self.poly.is_zero()
 
@@ -259,7 +272,7 @@ class Element():
         if isinstance(other, int):
             return self * Element(Polynomial([other], self.field))
         assert self.field == other.field
-        return Element((self.poly*other.poly) % self.field.irr)
+        return Element((self.poly * other.poly) % self.field.irr)
 
     def __rmul__(self, other):
         return self * other
@@ -269,7 +282,7 @@ class Element():
             return self / Element(Polynomial([other], self.field))
         assert self.field == other.field
         other_inv = other.inv()
-        return Element(self.poly)*Element(other_inv.poly)
+        return Element(self.poly) * Element(other_inv.poly)
 
     def __rtruediv__(self, other):
         if isinstance(other, int):
@@ -279,9 +292,9 @@ class Element():
         return Element(self.poly.inv())
 
     def __hash__(self):
-        return hash((tuple(self.poly.coefs),tuple(self.field.irr.coefs)))
+        return hash((tuple(self.poly.coefs), tuple(self.field.irr.coefs)))
 
-    def is_gen(self, verbose = False):
+    def is_gen(self, verbose=False):
         generated = self.generated_subgroup()
         if verbose:
             for gen in generated:
@@ -290,13 +303,13 @@ class Element():
 
     def generated_subgroup(self):
         generated = set()
-        cand = Element(Polynomial([1], self.field))*self
+        cand = Element(Polynomial([1], self.field)) * self
         while True:
             if cand in generated:
                 break
             generated.add(cand)
             cand = cand * self
-        return generated        
+        return generated
 
     @staticmethod
     def random(field):
@@ -304,10 +317,10 @@ class Element():
         elems = [i for i in range(p)]
         n = field.dim
         coefs = [random.choice(elems) for i in range(n)]
-        return Element(Polynomial(coefs,field))
+        return Element(Polynomial(coefs, field))
 
     @staticmethod
-    def draw_generator(field, halt = -1):
+    def draw_generator(field, halt=-1):
         while halt != 0:
             cand = Element.random(field)
             gen = cand.generated_subgroup()
@@ -316,17 +329,19 @@ class Element():
             halt -= 1
         return None
 
+
 def pad_lists(l1, l2):
-    length = max(len(l1),len(l2))
+    length = max(len(l1), len(l2))
     l1_pad = l1 + [0 for i in range(length - len(l1))]
     l2_pad = l2 + [0 for i in range(length - len(l2))]
     return l1_pad, l2_pad, length
+
 
 def inverses(p):
     dic = {}
     for i in range(p):
         for j in range(p):
-            if (i*j) % p == 1:
+            if (i * j) % p == 1:
                 dic[i] = j
                 break
     return dic
