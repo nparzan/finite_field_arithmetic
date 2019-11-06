@@ -2,15 +2,36 @@ import random
 
 
 class Field:
+    """Finite Field representation.
+
+    A finite field of prime (or prime power) size.
+
+    Attributes:
+        char (int): Characteristic
+        dim (int): Dimension
+        size (int): Number of elements in field
+        irr (Polynomial): Irreducible polynomial (if `dim > 1`)
+        inverses (dict): Inverses of constants in the field
+        indeterminate (str): Indeterminate symbol for polynomials
+    """
+
     def __init__(self, p, n, f, ind="x"):
-        """ Construct a field. Input: p, n, f.
-            Output: The field of size p**n defined as follows:
-                1. If n == 1: The field of size Fp (Zp)
-                2. If n > 1: The quotient Fp[x]/<f>, that is,
-                   the elements are polynomials of degree < n
-                   with coefficients in F where addition is done mod p
-                   and multiplication mod f
+        """Constructor:
+
+        Args:
+            p (int): characteristic
+            n (int): dimension
+            f (Polynomial): irreducible polynomial
+            ind (str): indeterminate symbol (default: "x")
+
+
+        Returns:
+            A Field:
+                * If `n == 1`: The field of `p` elements `Fp`
+                * If `n > 1`: The field of polynomials in the ring `Fp[x]`
+                mudulu the irreducible polynomial `f`: `Fp[x] % <f>`
         """
+
         self.irr = None
         if n > 1:
             self.irr = f
@@ -21,12 +42,29 @@ class Field:
         self.indeterminate = ind
 
     def zero(self):
+        """Returns the zero element of the field
+        """
+
         return Polynomial([0], self)
 
     def one(self):
+        """Returns the identity element of the field
+        """
+
         return Polynomial([1], self)
 
     def __repr__(self):
+        """Text representation.
+
+        Args:
+            self (Field): field
+
+        Returns:
+            A description:
+                * If `n == 1`: describe field size
+                * If `n > 1`: describe field size, characteristic
+                and irreducible polynomial
+        """
         if self.dim == 1:
             return "Field of size " + str(self.size)
         poly = str(self.irr)
@@ -38,7 +76,6 @@ class Field:
 
 class Polynomial:
     def __init__(self, coefs, field):
-
         if not any(coefs):
             coefs = [0]
         else:
@@ -153,9 +190,6 @@ class Polynomial:
             new_poly = Polynomial(new_poly_coefs, self.field)
             q = q + new_poly
             r = r - (new_poly * other)
-            if char:
-                if q != q % char or r != r % char:
-                    print("Check")
 
         return (q, r)
 
@@ -285,7 +319,8 @@ class Element():
 
     def __truediv__(self, other):
         if isinstance(other, int):
-            return self / Element(Polynomial([other], self.field), self.field)
+            pol = Polynomial([other], self.coef_field)
+            return self / Element(pol, self.field)
         assert self.field == other.field
         other_inv = other.inv()
         el1 = Element(self.poly, self.field)

@@ -1,0 +1,1279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.1" />
+<title>finite_field_arith API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>finite_field_arith</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import random
+
+
+class Field:
+    &#34;&#34;&#34;Finite Field representation.
+
+    A finite field of prime (or prime power) size.
+
+    Attributes:
+        char (int): Characteristic
+        dim (int): Dimension
+        size (int): Number of elements in field
+        irr (Polynomial): Irreducible polynomial (if `dim &gt; 1`)
+        inverses (dict): Inverses of constants in the field
+        indeterminate (str): Indeterminate symbol for polynomials
+    &#34;&#34;&#34;
+
+    def __init__(self, p, n, f, ind=&#34;x&#34;):
+        &#34;&#34;&#34;Constructor:
+
+        Args:
+            p (int): characteristic
+            n (int): dimension
+            f (Polynomial): irreducible polynomial
+            ind (str): indeterminate symbol (default: &#34;x&#34;)
+
+
+        Returns:
+            A Field:
+                * If `n == 1`: The field of `p` elements `Fp`
+                * If `n &gt; 1`: The field of polynomials in the ring `Fp[x]`
+                mudulu the irreducible polynomial `f`: `Fp[x] % &lt;f&gt;`
+        &#34;&#34;&#34;
+
+        self.irr = None
+        if n &gt; 1:
+            self.irr = f
+        self.char = p
+        self.dim = n
+        self.size = p**n
+        self.inverses = inverses(p)
+        self.indeterminate = ind
+
+    def zero(self):
+        &#34;&#34;&#34;Returns the zero element of the field
+        &#34;&#34;&#34;
+
+        return Polynomial([0], self)
+
+    def one(self):
+        &#34;&#34;&#34;Returns the identity element of the field
+        &#34;&#34;&#34;
+
+        return Polynomial([1], self)
+
+    def __repr__(self):
+        &#34;&#34;&#34;Text representation.
+
+        Args:
+            self (Field): field
+
+        Returns:
+            A description:
+                * If `n == 1`: describe field size
+                * If `n &gt; 1`: describe field size, characteristic
+                and irreducible polynomial
+        &#34;&#34;&#34;
+        if self.dim == 1:
+            return &#34;Field of size &#34; + str(self.size)
+        poly = str(self.irr)
+        st = &#34;Field of size &#34; + str(self.size)
+        st += &#34;, Characteristic &#34; + str(self.char)
+        st += &#34;, with irreducible polynomial &#34; + poly
+        return st
+
+
+class Polynomial:
+    def __init__(self, coefs, field):
+        &#34;&#34;&#34;XXX
+
+        Args:
+            x: y
+
+        Returns:
+            a: b
+            XXX
+        &#34;&#34;&#34;
+        if not any(coefs):
+            coefs = [0]
+        else:
+            for i in range(len(coefs) - 1, -1, -1):
+                if coefs[i] != 0:
+                    coefs = coefs[:i + 1]
+                    break
+        for coef in coefs:
+            pass
+            # TODO: assert coef in field
+
+        self.coefs = coefs
+        if field.char:
+            self.coefs = [coef % field.char for coef in self.coefs]
+
+        self.dim = len(self.coefs) - 1
+        self.field = field
+
+    def __repr__(self):
+        poly = &#34;&#34;
+        for i in range(len(self.coefs) - 1, -1, -1):
+            if self.coefs[i] != 0:
+                c, x, exp = &#34;&#34;, &#34;&#34;, &#34;&#34;
+                if self.coefs[i] != 1 or i == 0:
+                    c = str(self.coefs[i])
+
+                if i != 0:
+                    x = self.field.indeterminate
+                if (x != &#34;x&#34; and self.coefs[i] != 1 and
+                        not isinstance(self.coefs[i], int)):
+                    c = &#34;(&#34; + c + &#34;)&#34;
+                if i &gt; 1:
+                    exp = str(i)
+                    x += &#34;^&#34;
+                poly += c + x + exp + &#34;+&#34;
+        if poly == &#34;&#34;:
+            poly = &#34;00&#34;
+        return poly[:-1]
+
+    def __add__(self, other):
+        if isinstance(other, int):
+            return self + Polynomial([other], self.field)
+
+        assert self.field.char == other.field.char
+        selfcoefs, othercoefs, length = pad_lists(self.coefs, other.coefs)
+        new_coefs = [(selfcoefs[i] + othercoefs[i]) for i in range(length)]
+
+        if self.field.char:
+            new_coefs = [coef % self.field.char for coef in new_coefs]
+
+        return Polynomial(new_coefs, self.field)
+
+    def __radd__(self, other):
+        return self + other
+
+    def __neg__(self):
+        negs = [-coef for coef in self.coefs]
+        if self.field.char:
+            negs = [coef % self.field.char for coef in negs]
+        return Polynomial(negs, self.field)
+
+    def __sub__(self, other):
+        return self + (-other)
+
+    def __pow__(self, num):
+        assert isinstance(num, int)
+        new = Polynomial([1], self.field)
+        for i in range(num):
+            new = new * self
+        return new
+
+    def __truediv__(self, other):
+        if isinstance(other, int):
+            inv = inverses(self.field.char)[other]
+            return self * Polynomial([inv], self.field)
+        return self.poly_div_mod(other)[0]
+
+    def __rtruediv__(self, other):
+        if isinstance(other, int):
+            nom = Polynomial([other], self.field)
+            return nom / self
+
+    def __mod__(self, other):
+        print(&#34;Other:&#34;, other)
+        if isinstance(other, int):
+            return Polynomial([c % other for c in self.coefs], self.field)
+
+        if other.is_const() and not other.is_zero():
+            coefs = [coef % other.coefs[0] for coef in self.coefs]
+            return Polynomial(coefs, self.field)
+        else:
+            return self.poly_div_mod(other)[1]
+
+    def poly_div_mod(self, other):
+        assert not other.is_zero(), &#34;Divide by zero&#34;
+        err = &#34;Can&#39;t divide polynomials from fields of different chars.&#34;
+        assert self.field.char == other.field.char, err
+
+        char = self.field.char
+        if char:
+            invs = inverses(char)
+        q = Polynomial([0], self.field)
+        r = Polynomial([coef for coef in self.coefs], self.field)
+        while not r.is_zero() and r.deg() &gt;= other.deg():
+            if char:
+                t = r.coefs[r.deg()] * invs[other.coefs[other.deg()]]
+            else:
+                t = r.coefs[r.deg()] / other.coefs[other.deg()]
+
+            new_poly_coefs = [0 for i in range(r.deg() + 1)]
+            new_poly_coefs[r.deg() - other.deg()] = t
+            new_poly = Polynomial(new_poly_coefs, self.field)
+            q = q + new_poly
+            r = r - (new_poly * other)
+
+        return (q, r)
+
+    def __eq__(self, other):
+        if isinstance(other, int):
+            return self.coefs[0] == other and len(self.coefs) == 1
+
+        selfcoefs, othercoefs, _ = pad_lists(self.coefs, other.coefs)
+
+        return selfcoefs == othercoefs and self.field == other.field
+
+    def is_zero(self):
+        return self == 0 or self.coefs == [0 for i in range(len(self.coefs))]
+
+    def deg(self):
+        if self.is_zero():
+            return 0
+
+        n = len(self.coefs)
+
+        for i in range(n - 1, -1, -1):
+            if self.coefs[i] != 0:
+                return i
+        return 0
+
+    def __rmul__(self, other):
+        if isinstance(other, int):
+            return self * other
+
+    def is_const(self):
+        return len(self.coefs) == 1
+
+    def __mul__(self, other):
+        if isinstance(other, int):
+            return self * Polynomial([other], self.field)
+        err = &#34;Field characteristics must agree when multiplying polynomials&#34;
+        assert self.field.char == other.field.char, err
+
+        selfcoefs, othercoefs, length = pad_lists(self.coefs, other.coefs)
+
+        # Do the actual work
+        mult_coefs = [0 for i in range(2 * length - 1)]
+        for i in range(length):
+            for j in range(length):
+                mult_coefs[i + j] += selfcoefs[i] * othercoefs[j]
+
+        # Take mod field characteristic
+        if self.field.char:
+            mult_coefs = [coef % self.field.char for coef in mult_coefs]
+
+        return Polynomial(mult_coefs, self.field)
+
+    def inv(self, irr):
+        char = self.field.char
+        t = Polynomial([0], self.field)
+        newt = Polynomial([1], self.field)
+        r = Polynomial([1], self.field)
+        if irr:
+            r = Polynomial([coef for coef in irr.coefs], self.field)
+        newr = Polynomial([coef for coef in self.coefs], self.field)
+        while not newr.is_zero():
+            q = r.poly_div_mod(newr)[0]
+            r, newr = newr, r - (q * newr)
+            t, newt = newt, t - (q * newt)
+        err = &#34;Either field.irr is not irreducible &#34;
+        err += &#34;or polynomial is multiple of field.irr&#34;
+        assert r.deg() == 0, err
+
+        return t * inverses(char)[r.coefs[0]]
+
+    @staticmethod
+    def one(field):
+        return field.one()
+
+
+class Element():
+    def __init__(self, poly, field):
+        assert len(poly.coefs) &lt;= field.dim
+        self.poly = poly
+        self.field = field
+        self.coef_field = poly.field
+
+    def __repr__(self):
+        return str(self.poly) + &#34; in the &#34; + str(self.field).lower()
+
+    def __add__(self, other):
+        if isinstance(other, int):
+            pol = Polynomial([other], self.coef_field)
+            return self + Element(pol, self.field)
+        assert self.field == other.field
+        p = self.field.char
+        new_poly = (self.poly + other.poly) % p
+        return Element(new_poly, self.field)
+
+    def __neg__(self):
+        return Element((-self.poly) % self.field.char, self.field)
+
+    def __sub__(self, other):
+        return self + (-other)
+
+    def __eq__(self, other):
+        if isinstance(other, int):
+            return self.poly == Polynomial([other], self.field)
+        return self.poly == other.poly and self.field == other.field
+
+    def is_zero(self):
+        return self.poly.is_zero()
+
+    def deg(self):
+        return self.poly.deg()
+
+    def __pow__(self, num):
+        return Element((self.poly**num) % self.field.irr, self.field)
+
+    def __mul__(self, other):
+        if isinstance(other, int):
+            pol = Polynomial([other], self.coef_field)
+            return self * Element(pol, self.field)
+        assert self.field == other.field
+        mod = self.field.char
+        if self.field.irr:
+            mod = self.field.irr
+        return Element((self.poly * other.poly) % mod, self.field)
+
+    def __rmul__(self, other):
+        return self * other
+
+    def __truediv__(self, other):
+        if isinstance(other, int):
+            pol = Polynomial([other], self.coef_field)
+            return self / Element(pol, self.field)
+        assert self.field == other.field
+        other_inv = other.inv()
+        el1 = Element(self.poly, self.field)
+        el2 = Element(other_inv.poly, self.field)
+        return el1 * el2
+
+    def __rtruediv__(self, other):
+        if isinstance(other, int):
+            return Element(Polynomial([other], self.field), self.field) / self
+
+    def inv(self):
+        return Element(self.poly.inv(self.field.irr), self.field)
+
+    def __hash__(self):
+        return hash((tuple(self.poly.coefs), tuple(self.field.irr.coefs)))
+
+    def is_gen(self, verbose=False):
+        generated = self.generated_subgroup()
+        if verbose:
+            for gen in generated:
+                print(gen)
+        return len(generated) == self.field.size - 1
+
+    def generated_subgroup(self):
+        generated = set()
+        cand = Element(Polynomial([1], self.field)) * self
+        while True:
+            if cand in generated:
+                break
+            generated.add(cand)
+            cand = cand * self
+        return generated
+
+    @staticmethod
+    def random(field):
+        p = field.char
+        elems = [i for i in range(p)]
+        n = field.dim
+        coefs = [random.choice(elems) for i in range(n)]
+        return Element(Polynomial(coefs, field))
+
+    @staticmethod
+    def draw_generator(field, halt=-1):
+        while halt != 0:
+            cand = Element.random(field)
+            gen = cand.generated_subgroup()
+            if len(gen) == field.size - 1:
+                return cand
+            halt -= 1
+        return None
+
+
+def pad_lists(l1, l2):
+    length = max(len(l1), len(l2))
+    l1_pad = l1 + [0 for i in range(length - len(l1))]
+    l2_pad = l2 + [0 for i in range(length - len(l2))]
+    return l1_pad, l2_pad, length
+
+
+def inverses(p):
+    dic = {}
+    for i in range(p):
+        for j in range(p):
+            if (i * j) % p == 1:
+                dic[i] = j
+                break
+    return dic</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="finite_field_arith.inverses"><code class="name flex">
+<span>def <span class="ident">inverses</span></span>(<span>p)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inverses(p):
+    dic = {}
+    for i in range(p):
+        for j in range(p):
+            if (i * j) % p == 1:
+                dic[i] = j
+                break
+    return dic</code></pre>
+</details>
+</dd>
+<dt id="finite_field_arith.pad_lists"><code class="name flex">
+<span>def <span class="ident">pad_lists</span></span>(<span>l1, l2)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def pad_lists(l1, l2):
+    length = max(len(l1), len(l2))
+    l1_pad = l1 + [0 for i in range(length - len(l1))]
+    l2_pad = l2 + [0 for i in range(length - len(l2))]
+    return l1_pad, l2_pad, length</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="finite_field_arith.Element"><code class="flex name class">
+<span>class <span class="ident">Element</span></span>
+<span>(</span><span>poly, field)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Element():
+    def __init__(self, poly, field):
+        assert len(poly.coefs) &lt;= field.dim
+        self.poly = poly
+        self.field = field
+        self.coef_field = poly.field
+
+    def __repr__(self):
+        return str(self.poly) + &#34; in the &#34; + str(self.field).lower()
+
+    def __add__(self, other):
+        if isinstance(other, int):
+            pol = Polynomial([other], self.coef_field)
+            return self + Element(pol, self.field)
+        assert self.field == other.field
+        p = self.field.char
+        new_poly = (self.poly + other.poly) % p
+        return Element(new_poly, self.field)
+
+    def __neg__(self):
+        return Element((-self.poly) % self.field.char, self.field)
+
+    def __sub__(self, other):
+        return self + (-other)
+
+    def __eq__(self, other):
+        if isinstance(other, int):
+            return self.poly == Polynomial([other], self.field)
+        return self.poly == other.poly and self.field == other.field
+
+    def is_zero(self):
+        return self.poly.is_zero()
+
+    def deg(self):
+        return self.poly.deg()
+
+    def __pow__(self, num):
+        return Element((self.poly**num) % self.field.irr, self.field)
+
+    def __mul__(self, other):
+        if isinstance(other, int):
+            pol = Polynomial([other], self.coef_field)
+            return self * Element(pol, self.field)
+        assert self.field == other.field
+        mod = self.field.char
+        if self.field.irr:
+            mod = self.field.irr
+        return Element((self.poly * other.poly) % mod, self.field)
+
+    def __rmul__(self, other):
+        return self * other
+
+    def __truediv__(self, other):
+        if isinstance(other, int):
+            pol = Polynomial([other], self.coef_field)
+            return self / Element(pol, self.field)
+        assert self.field == other.field
+        other_inv = other.inv()
+        el1 = Element(self.poly, self.field)
+        el2 = Element(other_inv.poly, self.field)
+        return el1 * el2
+
+    def __rtruediv__(self, other):
+        if isinstance(other, int):
+            return Element(Polynomial([other], self.field), self.field) / self
+
+    def inv(self):
+        return Element(self.poly.inv(self.field.irr), self.field)
+
+    def __hash__(self):
+        return hash((tuple(self.poly.coefs), tuple(self.field.irr.coefs)))
+
+    def is_gen(self, verbose=False):
+        generated = self.generated_subgroup()
+        if verbose:
+            for gen in generated:
+                print(gen)
+        return len(generated) == self.field.size - 1
+
+    def generated_subgroup(self):
+        generated = set()
+        cand = Element(Polynomial([1], self.field)) * self
+        while True:
+            if cand in generated:
+                break
+            generated.add(cand)
+            cand = cand * self
+        return generated
+
+    @staticmethod
+    def random(field):
+        p = field.char
+        elems = [i for i in range(p)]
+        n = field.dim
+        coefs = [random.choice(elems) for i in range(n)]
+        return Element(Polynomial(coefs, field))
+
+    @staticmethod
+    def draw_generator(field, halt=-1):
+        while halt != 0:
+            cand = Element.random(field)
+            gen = cand.generated_subgroup()
+            if len(gen) == field.size - 1:
+                return cand
+            halt -= 1
+        return None</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="finite_field_arith.Element.draw_generator"><code class="name flex">
+<span>def <span class="ident">draw_generator</span></span>(<span>field, halt=-1)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def draw_generator(field, halt=-1):
+    while halt != 0:
+        cand = Element.random(field)
+        gen = cand.generated_subgroup()
+        if len(gen) == field.size - 1:
+            return cand
+        halt -= 1
+    return None</code></pre>
+</details>
+</dd>
+<dt id="finite_field_arith.Element.random"><code class="name flex">
+<span>def <span class="ident">random</span></span>(<span>field)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def random(field):
+    p = field.char
+    elems = [i for i in range(p)]
+    n = field.dim
+    coefs = [random.choice(elems) for i in range(n)]
+    return Element(Polynomial(coefs, field))</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="finite_field_arith.Element.deg"><code class="name flex">
+<span>def <span class="ident">deg</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def deg(self):
+    return self.poly.deg()</code></pre>
+</details>
+</dd>
+<dt id="finite_field_arith.Element.generated_subgroup"><code class="name flex">
+<span>def <span class="ident">generated_subgroup</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generated_subgroup(self):
+    generated = set()
+    cand = Element(Polynomial([1], self.field)) * self
+    while True:
+        if cand in generated:
+            break
+        generated.add(cand)
+        cand = cand * self
+    return generated</code></pre>
+</details>
+</dd>
+<dt id="finite_field_arith.Element.inv"><code class="name flex">
+<span>def <span class="ident">inv</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inv(self):
+    return Element(self.poly.inv(self.field.irr), self.field)</code></pre>
+</details>
+</dd>
+<dt id="finite_field_arith.Element.is_gen"><code class="name flex">
+<span>def <span class="ident">is_gen</span></span>(<span>self, verbose=False)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_gen(self, verbose=False):
+    generated = self.generated_subgroup()
+    if verbose:
+        for gen in generated:
+            print(gen)
+    return len(generated) == self.field.size - 1</code></pre>
+</details>
+</dd>
+<dt id="finite_field_arith.Element.is_zero"><code class="name flex">
+<span>def <span class="ident">is_zero</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_zero(self):
+    return self.poly.is_zero()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="finite_field_arith.Field"><code class="flex name class">
+<span>class <span class="ident">Field</span></span>
+<span>(</span><span>p, n, f, ind='x')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Finite Field representation.</p>
+<p>A finite field of prime (or prime power) size.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>char</code></strong> :&ensp;<code>int</code></dt>
+<dd>Characteristic</dd>
+<dt><strong><code>dim</code></strong> :&ensp;<code>int</code></dt>
+<dd>Dimension</dd>
+<dt><strong><code>size</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of elements in field</dd>
+<dt><strong><code>irr</code></strong> :&ensp;<a title="finite_field_arith.Polynomial" href="#finite_field_arith.Polynomial"><code>Polynomial</code></a></dt>
+<dd>Irreducible polynomial (if <code>dim &gt; 1</code>)</dd>
+<dt><strong><a title="finite_field_arith.inverses" href="#finite_field_arith.inverses"><code>inverses()</code></a></strong> :&ensp;<code>dict</code></dt>
+<dd>Inverses of constants in the field</dd>
+<dt><strong><code>indeterminate</code></strong> :&ensp;<code>str</code></dt>
+<dd>Indeterminate symbol for polynomials</dd>
+</dl>
+<p>Constructor:</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>p</code></strong> :&ensp;<code>int</code></dt>
+<dd>characteristic</dd>
+<dt><strong><code>n</code></strong> :&ensp;<code>int</code></dt>
+<dd>dimension</dd>
+<dt><strong><code>f</code></strong> :&ensp;<a title="finite_field_arith.Polynomial" href="#finite_field_arith.Polynomial"><code>Polynomial</code></a></dt>
+<dd>irreducible polynomial</dd>
+<dt><strong><code>ind</code></strong> :&ensp;<code>str</code></dt>
+<dd>indeterminate symbol (default: "x")</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A</code> <a title="finite_field_arith.Field" href="#finite_field_arith.Field"><code>Field</code></a>:</dt>
+<dd>
+<ul>
+<li>If <code>n == 1</code>: The field of <code>p</code> elements <code>Fp</code></li>
+<li>If <code>n &gt; 1</code>: The field of polynomials in the ring <code>Fp[x]</code>
+mudulu the irreducible polynomial <code>f</code>: <code>Fp[x] % &lt;f&gt;</code></li>
+</ul>
+</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Field:
+    &#34;&#34;&#34;Finite Field representation.
+
+    A finite field of prime (or prime power) size.
+
+    Attributes:
+        char (int): Characteristic
+        dim (int): Dimension
+        size (int): Number of elements in field
+        irr (Polynomial): Irreducible polynomial (if `dim &gt; 1`)
+        inverses (dict): Inverses of constants in the field
+        indeterminate (str): Indeterminate symbol for polynomials
+    &#34;&#34;&#34;
+
+    def __init__(self, p, n, f, ind=&#34;x&#34;):
+        &#34;&#34;&#34;Constructor:
+
+        Args:
+            p (int): characteristic
+            n (int): dimension
+            f (Polynomial): irreducible polynomial
+            ind (str): indeterminate symbol (default: &#34;x&#34;)
+
+
+        Returns:
+            A Field:
+                * If `n == 1`: The field of `p` elements `Fp`
+                * If `n &gt; 1`: The field of polynomials in the ring `Fp[x]`
+                mudulu the irreducible polynomial `f`: `Fp[x] % &lt;f&gt;`
+        &#34;&#34;&#34;
+
+        self.irr = None
+        if n &gt; 1:
+            self.irr = f
+        self.char = p
+        self.dim = n
+        self.size = p**n
+        self.inverses = inverses(p)
+        self.indeterminate = ind
+
+    def zero(self):
+        &#34;&#34;&#34;Returns the zero element of the field
+        &#34;&#34;&#34;
+
+        return Polynomial([0], self)
+
+    def one(self):
+        &#34;&#34;&#34;Returns the identity element of the field
+        &#34;&#34;&#34;
+
+        return Polynomial([1], self)
+
+    def __repr__(self):
+        &#34;&#34;&#34;Text representation.
+
+        Args:
+            self (Field): field
+
+        Returns:
+            A description:
+                * If `n == 1`: describe field size
+                * If `n &gt; 1`: describe field size, characteristic
+                and irreducible polynomial
+        &#34;&#34;&#34;
+        if self.dim == 1:
+            return &#34;Field of size &#34; + str(self.size)
+        poly = str(self.irr)
+        st = &#34;Field of size &#34; + str(self.size)
+        st += &#34;, Characteristic &#34; + str(self.char)
+        st += &#34;, with irreducible polynomial &#34; + poly
+        return st</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="finite_field_arith.Field.one"><code class="name flex">
+<span>def <span class="ident">one</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the identity element of the field</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def one(self):
+    &#34;&#34;&#34;Returns the identity element of the field
+    &#34;&#34;&#34;
+
+    return Polynomial([1], self)</code></pre>
+</details>
+</dd>
+<dt id="finite_field_arith.Field.zero"><code class="name flex">
+<span>def <span class="ident">zero</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the zero element of the field</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def zero(self):
+    &#34;&#34;&#34;Returns the zero element of the field
+    &#34;&#34;&#34;
+
+    return Polynomial([0], self)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="finite_field_arith.Polynomial"><code class="flex name class">
+<span>class <span class="ident">Polynomial</span></span>
+<span>(</span><span>coefs, field)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>XXX</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>x</code></strong></dt>
+<dd>y</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>a</code></strong></dt>
+<dd>b</dd>
+<dt><code>XXX</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Polynomial:
+    def __init__(self, coefs, field):
+        &#34;&#34;&#34;XXX
+
+        Args:
+            x: y
+
+        Returns:
+            a: b
+            XXX
+        &#34;&#34;&#34;
+        if not any(coefs):
+            coefs = [0]
+        else:
+            for i in range(len(coefs) - 1, -1, -1):
+                if coefs[i] != 0:
+                    coefs = coefs[:i + 1]
+                    break
+        for coef in coefs:
+            pass
+            # TODO: assert coef in field
+
+        self.coefs = coefs
+        if field.char:
+            self.coefs = [coef % field.char for coef in self.coefs]
+
+        self.dim = len(self.coefs) - 1
+        self.field = field
+
+    def __repr__(self):
+        poly = &#34;&#34;
+        for i in range(len(self.coefs) - 1, -1, -1):
+            if self.coefs[i] != 0:
+                c, x, exp = &#34;&#34;, &#34;&#34;, &#34;&#34;
+                if self.coefs[i] != 1 or i == 0:
+                    c = str(self.coefs[i])
+
+                if i != 0:
+                    x = self.field.indeterminate
+                if (x != &#34;x&#34; and self.coefs[i] != 1 and
+                        not isinstance(self.coefs[i], int)):
+                    c = &#34;(&#34; + c + &#34;)&#34;
+                if i &gt; 1:
+                    exp = str(i)
+                    x += &#34;^&#34;
+                poly += c + x + exp + &#34;+&#34;
+        if poly == &#34;&#34;:
+            poly = &#34;00&#34;
+        return poly[:-1]
+
+    def __add__(self, other):
+        if isinstance(other, int):
+            return self + Polynomial([other], self.field)
+
+        assert self.field.char == other.field.char
+        selfcoefs, othercoefs, length = pad_lists(self.coefs, other.coefs)
+        new_coefs = [(selfcoefs[i] + othercoefs[i]) for i in range(length)]
+
+        if self.field.char:
+            new_coefs = [coef % self.field.char for coef in new_coefs]
+
+        return Polynomial(new_coefs, self.field)
+
+    def __radd__(self, other):
+        return self + other
+
+    def __neg__(self):
+        negs = [-coef for coef in self.coefs]
+        if self.field.char:
+            negs = [coef % self.field.char for coef in negs]
+        return Polynomial(negs, self.field)
+
+    def __sub__(self, other):
+        return self + (-other)
+
+    def __pow__(self, num):
+        assert isinstance(num, int)
+        new = Polynomial([1], self.field)
+        for i in range(num):
+            new = new * self
+        return new
+
+    def __truediv__(self, other):
+        if isinstance(other, int):
+            inv = inverses(self.field.char)[other]
+            return self * Polynomial([inv], self.field)
+        return self.poly_div_mod(other)[0]
+
+    def __rtruediv__(self, other):
+        if isinstance(other, int):
+            nom = Polynomial([other], self.field)
+            return nom / self
+
+    def __mod__(self, other):
+        print(&#34;Other:&#34;, other)
+        if isinstance(other, int):
+            return Polynomial([c % other for c in self.coefs], self.field)
+
+        if other.is_const() and not other.is_zero():
+            coefs = [coef % other.coefs[0] for coef in self.coefs]
+            return Polynomial(coefs, self.field)
+        else:
+            return self.poly_div_mod(other)[1]
+
+    def poly_div_mod(self, other):
+        assert not other.is_zero(), &#34;Divide by zero&#34;
+        err = &#34;Can&#39;t divide polynomials from fields of different chars.&#34;
+        assert self.field.char == other.field.char, err
+
+        char = self.field.char
+        if char:
+            invs = inverses(char)
+        q = Polynomial([0], self.field)
+        r = Polynomial([coef for coef in self.coefs], self.field)
+        while not r.is_zero() and r.deg() &gt;= other.deg():
+            if char:
+                t = r.coefs[r.deg()] * invs[other.coefs[other.deg()]]
+            else:
+                t = r.coefs[r.deg()] / other.coefs[other.deg()]
+
+            new_poly_coefs = [0 for i in range(r.deg() + 1)]
+            new_poly_coefs[r.deg() - other.deg()] = t
+            new_poly = Polynomial(new_poly_coefs, self.field)
+            q = q + new_poly
+            r = r - (new_poly * other)
+
+        return (q, r)
+
+    def __eq__(self, other):
+        if isinstance(other, int):
+            return self.coefs[0] == other and len(self.coefs) == 1
+
+        selfcoefs, othercoefs, _ = pad_lists(self.coefs, other.coefs)
+
+        return selfcoefs == othercoefs and self.field == other.field
+
+    def is_zero(self):
+        return self == 0 or self.coefs == [0 for i in range(len(self.coefs))]
+
+    def deg(self):
+        if self.is_zero():
+            return 0
+
+        n = len(self.coefs)
+
+        for i in range(n - 1, -1, -1):
+            if self.coefs[i] != 0:
+                return i
+        return 0
+
+    def __rmul__(self, other):
+        if isinstance(other, int):
+            return self * other
+
+    def is_const(self):
+        return len(self.coefs) == 1
+
+    def __mul__(self, other):
+        if isinstance(other, int):
+            return self * Polynomial([other], self.field)
+        err = &#34;Field characteristics must agree when multiplying polynomials&#34;
+        assert self.field.char == other.field.char, err
+
+        selfcoefs, othercoefs, length = pad_lists(self.coefs, other.coefs)
+
+        # Do the actual work
+        mult_coefs = [0 for i in range(2 * length - 1)]
+        for i in range(length):
+            for j in range(length):
+                mult_coefs[i + j] += selfcoefs[i] * othercoefs[j]
+
+        # Take mod field characteristic
+        if self.field.char:
+            mult_coefs = [coef % self.field.char for coef in mult_coefs]
+
+        return Polynomial(mult_coefs, self.field)
+
+    def inv(self, irr):
+        char = self.field.char
+        t = Polynomial([0], self.field)
+        newt = Polynomial([1], self.field)
+        r = Polynomial([1], self.field)
+        if irr:
+            r = Polynomial([coef for coef in irr.coefs], self.field)
+        newr = Polynomial([coef for coef in self.coefs], self.field)
+        while not newr.is_zero():
+            q = r.poly_div_mod(newr)[0]
+            r, newr = newr, r - (q * newr)
+            t, newt = newt, t - (q * newt)
+        err = &#34;Either field.irr is not irreducible &#34;
+        err += &#34;or polynomial is multiple of field.irr&#34;
+        assert r.deg() == 0, err
+
+        return t * inverses(char)[r.coefs[0]]
+
+    @staticmethod
+    def one(field):
+        return field.one()</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="finite_field_arith.Polynomial.one"><code class="name flex">
+<span>def <span class="ident">one</span></span>(<span>field)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def one(field):
+    return field.one()</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="finite_field_arith.Polynomial.deg"><code class="name flex">
+<span>def <span class="ident">deg</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def deg(self):
+    if self.is_zero():
+        return 0
+
+    n = len(self.coefs)
+
+    for i in range(n - 1, -1, -1):
+        if self.coefs[i] != 0:
+            return i
+    return 0</code></pre>
+</details>
+</dd>
+<dt id="finite_field_arith.Polynomial.inv"><code class="name flex">
+<span>def <span class="ident">inv</span></span>(<span>self, irr)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def inv(self, irr):
+    char = self.field.char
+    t = Polynomial([0], self.field)
+    newt = Polynomial([1], self.field)
+    r = Polynomial([1], self.field)
+    if irr:
+        r = Polynomial([coef for coef in irr.coefs], self.field)
+    newr = Polynomial([coef for coef in self.coefs], self.field)
+    while not newr.is_zero():
+        q = r.poly_div_mod(newr)[0]
+        r, newr = newr, r - (q * newr)
+        t, newt = newt, t - (q * newt)
+    err = &#34;Either field.irr is not irreducible &#34;
+    err += &#34;or polynomial is multiple of field.irr&#34;
+    assert r.deg() == 0, err
+
+    return t * inverses(char)[r.coefs[0]]</code></pre>
+</details>
+</dd>
+<dt id="finite_field_arith.Polynomial.is_const"><code class="name flex">
+<span>def <span class="ident">is_const</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_const(self):
+    return len(self.coefs) == 1</code></pre>
+</details>
+</dd>
+<dt id="finite_field_arith.Polynomial.is_zero"><code class="name flex">
+<span>def <span class="ident">is_zero</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_zero(self):
+    return self == 0 or self.coefs == [0 for i in range(len(self.coefs))]</code></pre>
+</details>
+</dd>
+<dt id="finite_field_arith.Polynomial.poly_div_mod"><code class="name flex">
+<span>def <span class="ident">poly_div_mod</span></span>(<span>self, other)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def poly_div_mod(self, other):
+    assert not other.is_zero(), &#34;Divide by zero&#34;
+    err = &#34;Can&#39;t divide polynomials from fields of different chars.&#34;
+    assert self.field.char == other.field.char, err
+
+    char = self.field.char
+    if char:
+        invs = inverses(char)
+    q = Polynomial([0], self.field)
+    r = Polynomial([coef for coef in self.coefs], self.field)
+    while not r.is_zero() and r.deg() &gt;= other.deg():
+        if char:
+            t = r.coefs[r.deg()] * invs[other.coefs[other.deg()]]
+        else:
+            t = r.coefs[r.deg()] / other.coefs[other.deg()]
+
+        new_poly_coefs = [0 for i in range(r.deg() + 1)]
+        new_poly_coefs[r.deg() - other.deg()] = t
+        new_poly = Polynomial(new_poly_coefs, self.field)
+        q = q + new_poly
+        r = r - (new_poly * other)
+
+    return (q, r)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="finite_field_arith.inverses" href="#finite_field_arith.inverses">inverses</a></code></li>
+<li><code><a title="finite_field_arith.pad_lists" href="#finite_field_arith.pad_lists">pad_lists</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="finite_field_arith.Element" href="#finite_field_arith.Element">Element</a></code></h4>
+<ul class="two-column">
+<li><code><a title="finite_field_arith.Element.deg" href="#finite_field_arith.Element.deg">deg</a></code></li>
+<li><code><a title="finite_field_arith.Element.draw_generator" href="#finite_field_arith.Element.draw_generator">draw_generator</a></code></li>
+<li><code><a title="finite_field_arith.Element.generated_subgroup" href="#finite_field_arith.Element.generated_subgroup">generated_subgroup</a></code></li>
+<li><code><a title="finite_field_arith.Element.inv" href="#finite_field_arith.Element.inv">inv</a></code></li>
+<li><code><a title="finite_field_arith.Element.is_gen" href="#finite_field_arith.Element.is_gen">is_gen</a></code></li>
+<li><code><a title="finite_field_arith.Element.is_zero" href="#finite_field_arith.Element.is_zero">is_zero</a></code></li>
+<li><code><a title="finite_field_arith.Element.random" href="#finite_field_arith.Element.random">random</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="finite_field_arith.Field" href="#finite_field_arith.Field">Field</a></code></h4>
+<ul class="">
+<li><code><a title="finite_field_arith.Field.one" href="#finite_field_arith.Field.one">one</a></code></li>
+<li><code><a title="finite_field_arith.Field.zero" href="#finite_field_arith.Field.zero">zero</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="finite_field_arith.Polynomial" href="#finite_field_arith.Polynomial">Polynomial</a></code></h4>
+<ul class="two-column">
+<li><code><a title="finite_field_arith.Polynomial.deg" href="#finite_field_arith.Polynomial.deg">deg</a></code></li>
+<li><code><a title="finite_field_arith.Polynomial.inv" href="#finite_field_arith.Polynomial.inv">inv</a></code></li>
+<li><code><a title="finite_field_arith.Polynomial.is_const" href="#finite_field_arith.Polynomial.is_const">is_const</a></code></li>
+<li><code><a title="finite_field_arith.Polynomial.is_zero" href="#finite_field_arith.Polynomial.is_zero">is_zero</a></code></li>
+<li><code><a title="finite_field_arith.Polynomial.one" href="#finite_field_arith.Polynomial.one">one</a></code></li>
+<li><code><a title="finite_field_arith.Polynomial.poly_div_mod" href="#finite_field_arith.Polynomial.poly_div_mod">poly_div_mod</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

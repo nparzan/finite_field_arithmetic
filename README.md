@@ -85,6 +85,7 @@ g = Element.draw_generator(F, halt = k) #draw random element in F and return it 
 ## Todo
 The following is a list of features to be implemented in the future:
 * Update demo GIF: current GIF has polynomial in `F[x]` defined as a polynomial over a field `G = F[x] % irr`.
+* Complete docstrings: very partial atm.
 * Extension fields: in the current implementation a field of size `p^k` for `k > 1` must be constructed as a degree `k` extension of `F_p`. Future implementation should allow, for example, creating `G = F_p[x] % irr_1` and `H = G[y] % irr_2` where `irr_1` is in `F_p[x]` and `irr_2` is in `G[y]`.
 
 ## License
