@@ -23,38 +23,38 @@ The general syntax for creating a field is:
 F = Field(p, dim, irr)
 ```
 
-Where $p$ is some prime, $dim \geq 1$. If $dim > 1$ then $irr$ is an irreducible polynomial in $\mathbb{F}_{p}[x]$ of degree $n$.
+This is the construction of the field of size `p^dim` where `p` is some prime and `dim` is a positive integer. If `dim > 1` then `irr` is an irreducible polynomial in `F_p[x]` of degree `n`.
 
-For example, to construct $\mathbb{F}_2$:
+For example, to construct `F_2`:
 ```python
 F2 = Field(2, 1, None)
 ```
 
-Given an irreducible polynomial of degree $3$ over $\mathbb{F}_2$, say $irr = x^3 + x + 1$ one can construct $\mathbb{F}_8$ simply by calling:
+Given an irreducible polynomial of degree `3` over `F_2`, say `irr = x^3 + x + 1` one can construct `F_8` simply by calling:
 
 ```python
 F8 = Field(2, 3, irr)
 ```
 ### Polynomials
-A polynomial $f$ of degree $k$ is determined by:
-* Its underlying field $\mathbb{F}$
-* Its list of coefficients $\alpha_0, \ldots, \alpha_k \in \mathbb{F}$
+A polynomial `f` of degree `k` is determined by:
+* Its underlying field `F`
+* Its list of coefficients `alpha_0, ... , alpha_k`, all elements of `F`
 
-Given a field $F$ and a list of coefficients $coefs$ from list we can construct the polynomial:
+Given a field `F` and a list of coefficients `coefs` from list we can construct the polynomial:
 ```python
 f = Polynomial(coefs, F)
 ```
 ### Field Elements
-A field element $\alpha \in \mathbb{F}$ is determined by the polynomial representation of $\alpha$ and its underlying field $\mathbb{F}$. Note that since the polynomial representation of $\alpha$ already encapsulates $\mathbb{F}$ the construction of $\alpha$ is dependent on the polynomial alone. 
+A field element `alpha` in `F` is determined by the polynomial representation of `alpha` and its underlying field `F`. Note that since the polynomial representation of `alpha` already encapsulates `F` the construction of `alpha` is dependent on the polynomial alone.
 
-That is, if $f$ is a polynomial in some field $F$ then:
+That is, if `f` is a polynomial in some field `F` then:
 ```python
 alpha = Element(f)
 ```
-Constructs the appropriate field element $f \textrm{ mod } F.irr$
+Constructs the appropriate field element `f % F.irr`
 
 ### Full example
-The following snippet constructs $\mathbb{F}_2, \mathbb{F}_8\cong \mathbb{F}_2[x] / \langle x^3 + x + 1\rangle, f=1+x^2$ and the field element $\alpha_f = 1 + x^2 \mod x^3 + x + 1$:
+The following snippet constructs `F_2, F_8 = F_p[x] % x^3 + x + 1, f = 1 + x^2` and the field element `alpha_f = 1 + x^2 % (x^3 + x + 1)`:
 ```python
 F2 = Field(2, 1, None)
 irr = Polynomial([1, 1, 0, 1], F2)
@@ -64,10 +64,11 @@ f_in_field = Element(f)
 ```
 
 ## Functionality
-In what follows, let $F$ be a field, $f,g,h$ polynomials and $a,b$ field elements. Things you can do with this module include:
+In what follows, let `F` be a field, `f, g, h` polynomials and `a, b` field elements. Things you can do with this module include:
 
 ### Polynomial arithmetic:
- ```python
+
+```python
 t = f * g #product
 t = f + g #addition (and subtraction)
 t = f / g #quotient 
