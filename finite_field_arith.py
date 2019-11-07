@@ -159,7 +159,6 @@ class Polynomial:
             return nom / self
 
     def __mod__(self, other):
-        print("Other:", other)
         if isinstance(other, int):
             return Polynomial([c % other for c in self.coefs], self.field)
 
@@ -242,6 +241,18 @@ class Polynomial:
 
         return Polynomial(mult_coefs, self.field)
 
+    # TODO: evaluation should be in the field.
+    # i.e. take every coef and convert to field element and then multiply
+    def __call__(self, val):
+        exp = 1
+        ret = Element(Polynomial([0], self.field), self.field)
+        for coef in self.coefs:
+            t = Element(Polynomial([coef * exp], self.field), self.field)
+            ret += t
+            exp = exp * val
+            ret = ret % self.field.char
+        return ret
+
     def inv(self, irr):
         char = self.field.char
         t = Polynomial([0], self.field)
@@ -283,6 +294,9 @@ class Element():
         p = self.field.char
         new_poly = (self.poly + other.poly) % p
         return Element(new_poly, self.field)
+
+    def __radd__(self, other):
+        return self + other
 
     def __neg__(self):
         return Element((-self.poly) % self.field.char, self.field)
@@ -346,7 +360,7 @@ class Element():
 
     def generated_subgroup(self):
         generated = set()
-        cand = Element(Polynomial([1], self.field)) * self
+        cand = Element(Polynomial([1], self.coef_field), self.field) * self
         while True:
             if cand in generated:
                 break
@@ -354,13 +368,21 @@ class Element():
             cand = cand * self
         return generated
 
+    def __mod__(self, other):
+#        if isinstance(other, int):
+#            other_pol = Polynomial([other], self.coef_field)
+#            other_el = Element(other_pol, self.field)
+#            return self % other_el
+
+        return Element(self.poly % other, self.field)
+
     @staticmethod
     def random(field):
         p = field.char
         elems = [i for i in range(p)]
         n = field.dim
         coefs = [random.choice(elems) for i in range(n)]
-        return Element(Polynomial(coefs, field))
+        return Element(Polynomial(coefs, field), field)
 
     @staticmethod
     def draw_generator(field, halt=-1):
