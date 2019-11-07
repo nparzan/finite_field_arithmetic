@@ -7,6 +7,21 @@ g = Polynomial([3, 3, 2], F)
 #f+f
 
 F2 = Field(2,1,None)
+F13 = Field(13, 1, None)
+Elems13 = [Element(Polynomial([i], F13), F13) for i in range(13)]
+E0 = Element(Polynomial([0], F2), F2)
+E1 = Element(Polynomial([1], F2), F2)
+irr = Polynomial([E1, E1, E0, E1], F2)
+F8 = Field(2, 3, irr)
+a = Element(Polynomial([E0, E1, E1], F2), F8)
+print(a.inv(),a)
+
+f_x = Polynomial([Elems13[4], Elems13[7], Elems13[9]], F13)
+#print(Elems13[6].inv())
+#print(f_x, f_x(4), Elems13[7] % Elems13[4])
+exit()
+
+
 irr = Polynomial([1, 1, 0, 1], F2)
 print("eval", irr(1))
 G = Field(2, 3, irr, ind="y")

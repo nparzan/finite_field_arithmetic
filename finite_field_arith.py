@@ -1,4 +1,5 @@
 import random
+DESC_FIELD = False
 
 
 class Field:
@@ -99,12 +100,13 @@ class Polynomial:
         for i in range(len(self.coefs) - 1, -1, -1):
             if self.coefs[i] != 0:
                 c, x, exp = "", "", ""
+                ind = self.field.indeterminate
                 if self.coefs[i] != 1 or i == 0:
                     c = str(self.coefs[i])
 
                 if i != 0:
-                    x = self.field.indeterminate
-                if (x != "x" and self.coefs[i] != 1 and
+                    x = ind
+                if (ind != "x" and self.coefs[i] != 1 and
                         not isinstance(self.coefs[i], int)):
                     c = "(" + c + ")"
                 if i > 1:
@@ -162,6 +164,9 @@ class Polynomial:
         if isinstance(other, int):
             return Polynomial([c % other for c in self.coefs], self.field)
 
+        if isinstance(other, Element):
+            return self % other.poly
+
         if other.is_const() and not other.is_zero():
             coefs = [coef % other.coefs[0] for coef in self.coefs]
             return Polynomial(coefs, self.field)
@@ -180,7 +185,12 @@ class Polynomial:
         r = Polynomial([coef for coef in self.coefs], self.field)
         while not r.is_zero() and r.deg() >= other.deg():
             if char:
-                t = r.coefs[r.deg()] * invs[other.coefs[other.deg()]]
+                # print("OTHER", other, type(other), other.coefs, other.deg())
+                # print("INVS", invs[1], type(other.coefs[other.deg()]))
+                key = other.coefs[other.deg()]
+                while isinstance(key, Element):
+                    key = key.poly.coefs[0]
+                t = r.coefs[r.deg()] * invs[key]
             else:
                 t = r.coefs[r.deg()] / other.coefs[other.deg()]
 
@@ -268,8 +278,10 @@ class Polynomial:
         err = "Either field.irr is not irreducible "
         err += "or polynomial is multiple of field.irr"
         assert r.deg() == 0, err
-
-        return t * inverses(char)[r.coefs[0]]
+        key = r.coefs[0]
+        while isinstance(key, Element):
+            key = key.poly.coefs[0]
+        return t * inverses(char)[key]
 
     @staticmethod
     def one(field):
@@ -284,7 +296,10 @@ class Element():
         self.coef_field = poly.field
 
     def __repr__(self):
-        return str(self.poly) + " in the " + str(self.field).lower()
+        field_desc = ""
+        if DESC_FIELD:
+            field_desc = " in the " + str(self.field).lower()
+        return str(self.poly) + field_desc
 
     def __add__(self, other):
         if isinstance(other, int):
@@ -349,7 +364,7 @@ class Element():
         return Element(self.poly.inv(self.field.irr), self.field)
 
     def __hash__(self):
-        return hash((tuple(self.poly.coefs), tuple(self.field.irr.coefs)))
+        return hash((tuple(self.poly.coefs), self.field.size))
 
     def is_gen(self, verbose=False):
         generated = self.generated_subgroup()
